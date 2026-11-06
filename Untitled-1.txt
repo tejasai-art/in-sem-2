@@ -1,0 +1,222 @@
+
+import React, { useState } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useNavigate,
+  Navigate
+} from "react-router-dom";
+
+import "./App.css";
+
+// LOGIN PAGE
+function Login() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    if (username === "admin" && password === "12345") {
+      sessionStorage.setItem("loggedIn", "true");
+      navigate("/dashboard");
+    } else {
+      alert("Invalid Username or Password!");
+    }
+  };
+
+  return (
+    <div style={styles.loginContainer}>
+      <form onSubmit={handleLogin} style={styles.loginBox}>
+        <h1>Welcome Back!</h1>
+        <p>Login to your account</p>
+
+        <input
+          style={styles.input}
+          type="text"
+          placeholder="Enter Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+
+        <input
+          style={styles.input}
+          type="password"
+          placeholder="Enter Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+
+        <button style={styles.loginButton} type="submit">
+          Login
+        </button>
+      </form>
+    </div>
+  );
+}
+
+// DASHBOARD PAGE
+function Dashboard() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("loggedIn");
+    alert("Logout Successfully!");
+    navigate("/");
+  };
+
+  return (
+    <div style={styles.dashboard}>
+      <nav style={styles.navbar}>
+        <h2>My Dashboard</h2>
+
+        <button onClick={handleLogout} style={styles.logoutButton}>
+          Logout
+        </button>
+      </nav>
+
+      <div style={styles.content}>
+        <h1>Welcome to Dashboard!</h1>
+        <p>You have successfully logged in.</p>
+
+        <div style={styles.cardContainer}>
+          <div style={styles.card}>
+            <h2>Profile</h2>
+            <p>View your personal information.</p>
+          </div>
+
+          <div style={styles.card}>
+            <h2>Settings</h2>
+            <p>Manage your account settings.</p>
+          </div>
+
+          <div style={styles.card}>
+            <h2>Reports</h2>
+            <p>View your reports and activities.</p>
+          </div>
+
+          <div style={styles.card}>
+            <h2>Users</h2>
+            <p>Manage registered users.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// PROTECTED ROUTE
+function ProtectedRoute({ children }) {
+  const isLoggedIn = sessionStorage.getItem("loggedIn");
+
+  return isLoggedIn ? children : <Navigate to="/" replace />;
+}
+
+// MAIN APP
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+// CSS STYLES
+const styles = {
+  loginContainer: {
+    height: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    background: "linear-gradient(135deg, #667eea, #764ba2)"
+  },
+
+  loginBox: {
+    background: "white",
+    padding: "40px",
+    borderRadius: "15px",
+    width: "320px",
+    textAlign: "center",
+    boxShadow: "0 5px 20px rgba(0,0,0,0.2)"
+  },
+
+  input: {
+    width: "100%",
+    padding: "12px",
+    margin: "12px 0",
+    boxSizing: "border-box",
+    border: "1px solid #ccc",
+    borderRadius: "7px"
+  },
+
+  loginButton: {
+    width: "100%",
+    padding: "12px",
+    background: "#667eea",
+    color: "white",
+    border: "none",
+    borderRadius: "7px",
+    cursor: "pointer",
+    fontSize: "16px"
+  },
+
+  dashboard: {
+    minHeight: "100vh",
+    background: "#f1f5f9"
+  },
+
+  navbar: {
+    background: "#1e293b",
+    color: "white",
+    padding: "20px 30px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center"
+  },
+
+  logoutButton: {
+    background: "#ef4444",
+    color: "white",
+    padding: "10px 20px",
+    border: "none",
+    borderRadius: "7px",
+    cursor: "pointer"
+  },
+
+  content: {
+    padding: "40px"
+  },
+
+  cardContainer: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "20px",
+    marginTop: "30px"
+  },
+
+  card: {
+    background: "white",
+    padding: "30px",
+    borderRadius: "12px",
+    flex: "1 1 200px",
+    boxShadow: "0 3px 10px rgba(0,0,0,0.1)"
+  }
+};
+
+export default App;
